@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 
 from ..db import get_db
 from ..models import User
-from ..schemas import UserRead, UserCreate
+from ..schemas import UserRead, UserCreate, UserLogin
 from ..auth import get_current_user, hash_password
 
 router = APIRouter(prefix="/api/v1/users", tags=["users"])
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/v1/users", tags=["users"])
 @router.get("/me", response_model=UserRead)
 async def read_current_user(current_user: User = Depends(get_current_user)):
     # Pydanticモデルに変換して返す
-    return UserRead.from_orm(current_user)
+    return UserRead.model_validate(user)
 
 
 
