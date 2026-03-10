@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/v1/users", tags=["users"])
 @router.get("/me", response_model=UserRead)
 async def read_current_user(current_user: User = Depends(get_current_user)):
     # Pydanticモデルに変換して返す
-    return UserRead.model_validate(user)
+    return UserRead.model_validate(current_user)
 
 
 
@@ -32,7 +32,7 @@ async def create_user(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
-    return UserRead.from_orm(new_user)
+    return UserRead.model_validate(new_user)
 
 
 @router.post("/login")
