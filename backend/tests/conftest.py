@@ -1,9 +1,7 @@
-# tests/conftest.py
 import pytest
 import asyncio
 import os
 from httpx import AsyncClient
-
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from app.main import app
@@ -25,7 +23,7 @@ async def db_engine():
     DATABASE_URL = os.getenv("DATABASE_URL")
     engine = create_async_engine(DATABASE_URL, echo=True)
 
-    # テーブルを作る
+    # テーブルを作成
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -50,13 +48,16 @@ async def db_session(db_engine):
 
 @pytest.fixture(scope="function")
 async def client(db_session):
+    # DB依存関係を上書き
     async def override_get_db():
         async with db_session as session:
             yield session
 
     app.dependency_overrides[get_db] = override_get_db
+
     async with AsyncClient(app=app, base_url="http://testserver") as c:
         yield c
+
     app.dependency_overrides.clear()
 
 

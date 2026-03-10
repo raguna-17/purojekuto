@@ -1,10 +1,8 @@
-# tests/test_users.py
 import pytest
 from httpx import AsyncClient
 
 @pytest.mark.asyncio
-async def test_create_user(client: AsyncClient, db_session):
-    # 新しいユーザを作成するAPIテスト
+async def test_create_user(client: AsyncClient):
     response = await client.post(
         "/users/",
         json={"email": "newuser@example.com", "password": "password123"}
@@ -17,7 +15,6 @@ async def test_create_user(client: AsyncClient, db_session):
 
 @pytest.mark.asyncio
 async def test_login_user(client: AsyncClient, test_user):
-    # 既存ユーザでログイン
     response = await client.post(
         "/users/login",
         data={"username": test_user.email, "password": "password123"}
@@ -30,10 +27,8 @@ async def test_login_user(client: AsyncClient, test_user):
 
 @pytest.mark.asyncio
 async def test_get_current_user(client: AsyncClient, test_user):
-    # JWT を使って /users/me 取得
     from app.auth import create_access_token
     token = create_access_token({"sub": str(test_user.id)})
-
     headers = {"Authorization": f"Bearer {token}"}
     response = await client.get("/users/me", headers=headers)
     assert response.status_code == 200
