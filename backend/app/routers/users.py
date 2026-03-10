@@ -34,19 +34,23 @@ async def create_user(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.refresh(new_user)
     return UserRead.from_orm(new_user)
 
-# ----------------------
+
 @router.post("/login")
 async def login(
-    email: str = Body(...),
-    password: str = Body(...),
+    user_in: UserLogin,
     db: AsyncSession = Depends(get_db)
 ):
     from ..auth import verify_password, create_access_token
 
-    result = await db.execute(select(User).where(User.email == email))
+    result = await db.execute(select(User).where(User.email == user_in.email))
     user = result.scalars().first()
-    if not user or not verify_password(password, user.hashed_password):
+
+    if not user or not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
