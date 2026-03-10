@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+asyncpg
+alembic
+passlib[argon2]
+python-jose
+pydantic
+pydantic[email]
