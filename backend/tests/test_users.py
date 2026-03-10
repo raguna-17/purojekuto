@@ -40,3 +40,45 @@ async def test_get_current_user(client: AsyncClient, test_user):
     assert response.status_code == 200
     data = response.json()
     assert data["email"] == test_user.email
+
+
+
+@pytest.mark.asyncio
+async def test_create_user_duplicate_email(client, test_user):
+    response = await client.post(
+        "/api/v1/users/",
+        json={
+            "email": test_user.email,
+            "password": "password123"
+        }
+    )
+
+    assert response.status_code == 400
+    data = response.json()
+    assert data["detail"] == "Email already registered"
+
+
+@pytest.mark.asyncio
+async def test_login_user_not_found(client):
+    response = await client.post(
+        "/api/v1/users/login",
+        json={
+            "email": "unknown@example.com",
+            "password": "password123"
+        }
+    )
+
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_login_user_wrong_password(client, test_user):
+    response = await client.post(
+        "/api/v1/users/login",
+        json={
+            "email": test_user.email,
+            "password": "wrongpassword"
+        }
+    )
+
+    assert response.status_code == 401
