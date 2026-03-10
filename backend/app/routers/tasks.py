@@ -28,7 +28,6 @@ async def create_task(
         description=task_in.description,
         status=task_in.status,
         priority=task_in.priority,
-        due_date=task_in.due_date,
         project_id=task_in.project_id
     )
     db.add(new_task)
