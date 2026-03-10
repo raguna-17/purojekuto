@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from app.main import app
 from app.models import Base, User
 from app.db import get_db
-from app.auth import hash_password
+from app.auth import hash_password,get_current_user
 
 
 @pytest.fixture(scope="session")
@@ -47,13 +47,16 @@ async def db_session(db_engine):
 
 
 @pytest.fixture(scope="function")
-async def client(db_session):
+async def client(db_session, test_user):
 
     async def override_get_db():
-        async with db_session as session:
-            yield session
+        yield db_session
+
+    async def override_get_current_user():
+        return test_user
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = override_get_current_user
 
     transport = ASGITransport(app=app)
 
