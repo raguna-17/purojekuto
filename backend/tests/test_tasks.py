@@ -1,8 +1,8 @@
 import pytest
 
 
-@pytest.mark.asyncio
-async def create_project(client):
+@pytest.fixture
+async def project_id(client):
     res = await client.post(
         "/api/v1/projects/",
         json={"name": "TaskProject", "description": "desc"}
@@ -11,9 +11,7 @@ async def create_project(client):
 
 
 @pytest.mark.asyncio
-async def test_create_task(client):
-
-    project_id = await create_project(client)
+async def test_create_task(client, project_id):
 
     res = await client.post(
         "/api/v1/tasks/",
@@ -46,9 +44,7 @@ async def test_create_task_project_not_found(client):
 
 
 @pytest.mark.asyncio
-async def test_get_tasks_by_project(client):
-
-    project_id = await create_project(client)
+async def test_get_tasks_by_project(client, project_id):
 
     await client.post(
         "/api/v1/tasks/",
@@ -66,9 +62,7 @@ async def test_get_tasks_by_project(client):
 
 
 @pytest.mark.asyncio
-async def test_delete_task(client):
-
-    project_id = await create_project(client)
+async def test_delete_task(client, project_id):
 
     task = await client.post(
         "/api/v1/tasks/",
@@ -86,16 +80,13 @@ async def test_delete_task(client):
     assert res.status_code == 204
 
 
-    
-
-
-
 @pytest.mark.asyncio
 async def test_get_tasks_project_not_found(client):
 
     res = await client.get("/api/v1/tasks/project/999")
 
     assert res.status_code == 404
+
 
 @pytest.mark.asyncio
 async def test_delete_task_not_found(client):
@@ -104,10 +95,10 @@ async def test_delete_task_not_found(client):
 
     assert res.status_code == 404
 
+
 @pytest.mark.asyncio
 async def test_delete_task_not_owner(client, db_session):
 
-    # user1のプロジェクト作成
     project = await client.post(
         "/api/v1/projects/",
         json={"name": "Project1", "description": "desc"}
@@ -125,9 +116,10 @@ async def test_delete_task_not_owner(client, db_session):
 
     task_id = task.json()["id"]
 
-    # 別ユーザー作成
     from app.models import User
     from app.auth import hash_password
+    from app.auth import get_current_user
+    from app.main import app
 
     other_user = User(
         email="other@example.com",
@@ -139,10 +131,6 @@ async def test_delete_task_not_owner(client, db_session):
     await db_session.commit()
     await db_session.refresh(other_user)
 
-    # current_user override
-    from app.auth import get_current_user
-    from app.main import app
-
     async def override_user():
         return other_user
 
@@ -151,3 +139,5 @@ async def test_delete_task_not_owner(client, db_session):
     res = await client.delete(f"/api/v1/tasks/{task_id}")
 
     assert res.status_code == 403
+
+    app.dependency_overrides.clear()
