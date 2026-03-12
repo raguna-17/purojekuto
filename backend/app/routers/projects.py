@@ -31,6 +31,23 @@ async def create_project(
 
 
 # ----------------------
+# 自分のプロジェクト一覧取得
+# ----------------------
+@router.get("/", response_model=list[ProjectRead])
+async def read_projects(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(
+        select(Project).where(Project.owner_id == current_user.id)
+    )
+
+    projects = result.scalars().all()
+
+    return [ProjectRead.from_orm(p) for p in projects]
+
+    
+# ----------------------
 # プロジェクト取得（ID指定）
 # ----------------------
 @router.get("/{project_id}", response_model=ProjectRead)
