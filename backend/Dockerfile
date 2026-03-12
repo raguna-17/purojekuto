@@ -22,3 +22,4 @@ COPY . .
 # 環境変数読み込み（Docker Compose で .env をマウント推奨）
 ENV PYTHONUNBUFFERED=1
 
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]

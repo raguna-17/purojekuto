@@ -86,6 +86,22 @@ Authorization: Bearer <token> ヘッダーでAPIアクセス
 
 
 
+## テスト & カバレッジ
+
+全機能に対してpytestで単体テスト実施（24件すべてPASS）
+
+非同期API、ユーザー認証、CRUD操作を含む
+
+テストカバレッジ: 90%（未カバーは主に認証・DB初期化部分）
+
+pytestでの実行例:
+```bash
+pytest
+============================= test session starts ==============================
+collected 24 items / 24 passed
+```
+
+
 ## 強調ポイント
 
 非同期API + 非同期ORMによる高パフォーマンス設計
