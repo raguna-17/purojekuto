@@ -15,7 +15,7 @@ FastAPIをバックエンドに、PostgreSQLとDockerを組み合わせた高速
 
 
 ![alt text](image-1.png)
-![alt text](image-2.png)
+![alt text](image-3.png)
 
 
 ## 技術スタック
