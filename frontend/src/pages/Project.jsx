@@ -8,7 +8,9 @@ function Project() {
 
     const [project, setProject] = useState(null);
     const [tasks, setTasks] = useState([]);
+
     const [newTaskTitle, setNewTaskTitle] = useState("");
+    const [newTaskPriority, setNewTaskPriority] = useState(1);
 
     useEffect(() => {
         fetchData();
@@ -45,10 +47,12 @@ function Project() {
         try {
             await createTask({
                 title: newTaskTitle,
-                project_id: id
+                project_id: id,
+                priority: newTaskPriority
             });
 
             setNewTaskTitle("");
+            setNewTaskPriority(1);
             fetchData();
         } catch (err) {
             alert("タスク作成失敗: " + (err.response?.data?.detail || err.message));
@@ -71,7 +75,7 @@ function Project() {
             <ul>
                 {tasks.map((t) => (
                     <li key={t.id} style={{ marginBottom: "8px" }}>
-                        {t.title} - {t.status} - 優先度: {t.priority}
+                        {t.title} - 優先度: {t.priority}
 
                         <button
                             style={{ marginLeft: "8px", color: "red" }}
@@ -93,6 +97,15 @@ function Project() {
                     onChange={(e) => setNewTaskTitle(e.target.value)}
                     required
                     style={{ marginRight: "8px" }}
+                />
+
+                <input
+                    type="number"
+                    min="1"
+                    max="9"
+                    value={newTaskPriority}
+                    onChange={(e) => setNewTaskPriority(Number(e.target.value))}
+                    style={{ width: "60px", marginRight: "8px" }}
                 />
 
                 <button type="submit">
