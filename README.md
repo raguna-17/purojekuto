@@ -14,6 +14,10 @@ FastAPIをバックエンドに、PostgreSQLとDockerを組み合わせた高速
 - フロントエンド: [https://purojekuto-furonto.onrender.com]
 
 
+![alt text](image-1.png)
+![alt text](image-2.png)
+
+
 ## 技術スタック
 
 - **バックエンド**
