@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # 依存関係コピーとインストール
 COPY requirements.txt .
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # アプリコピー
@@ -22,4 +23,4 @@ COPY . .
 # 環境変数読み込み（Docker Compose で .env をマウント推奨）
 ENV PYTHONUNBUFFERED=1
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
