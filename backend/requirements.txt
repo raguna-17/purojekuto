@@ -7,4 +7,3 @@ passlib[argon2]
 python-jose
 pydantic
 pydantic[email]
-psycopg2-binary

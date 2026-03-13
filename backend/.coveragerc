@@ -4,4 +4,4 @@ omit =
 
 [report]
 show_missing = True
-precision = 11
+precision = 1
